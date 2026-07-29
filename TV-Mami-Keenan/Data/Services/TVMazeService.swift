@@ -55,6 +55,17 @@ final class TVMazeService: TVMazeServiceProtocol {
         return dto.toDomain()
     }
 
+    /// Fetches the list of seasons for a given show.
+    func fetchSeasons(showID: Int) async throws -> [Season] {
+        let url = try buildURL(path: "/shows/\(showID)/seasons")
+
+        let (data, response) = try await performRequest(url: url)
+        try validateHTTPResponse(response)
+
+        let dtos = try decode([SeasonDTO].self, from: data)
+        return dtos.map { $0.toDomain() }
+    }
+
     // MARK: - Private Helpers
 
     private func buildURL(path: String, queryItems: [URLQueryItem] = []) throws -> URL {

@@ -21,6 +21,12 @@ protocol TVMazeServiceProtocol {
     /// - Returns: A domain `ShowDetail` object.
     /// - Throws: `TVMazeServiceError` on network or decoding failure.
     func fetchShowDetail(id: Int) async throws -> ShowDetail
+
+    /// Fetches the list of seasons for a given show from the TVMaze API.
+    /// - Parameter showID: The TVMaze show ID.
+    /// - Returns: An array of domain `Season` objects ordered by season number.
+    /// - Throws: `TVMazeServiceError` on network or decoding failure.
+    func fetchSeasons(showID: Int) async throws -> [Season]
 }
 
 // MARK: - TVMazeServiceError
