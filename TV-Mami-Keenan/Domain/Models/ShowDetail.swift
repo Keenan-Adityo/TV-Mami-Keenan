@@ -10,6 +10,7 @@ import Foundation
 
 struct ShowDetail: Identifiable, Hashable {
     let id: Int
+    let url: URL?
     let name: String
     let premiered: String?
     let posterURL: URL?

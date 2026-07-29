@@ -61,6 +61,17 @@ private extension DetailScreenView {
         .ignoresSafeArea(edges: .top)
         .navigationTitle(showDetail.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if let url = showDetail.url {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    ShareLink(
+                        item: url,
+                        subject: Text(showDetail.name),
+                        message: Text(showDetail.summary ?? "")
+                    )
+                }
+            }
+        }
     }
 
     func backdropImage(url: URL?) -> some View {

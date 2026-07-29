@@ -11,6 +11,7 @@ import Foundation
 
 struct ShowDetailDTO: Decodable {
     let id: Int
+    let url: String?
     let name: String
     let premiered: String?
     let image: ShowDetailImageDTO?
@@ -32,6 +33,7 @@ extension ShowDetailDTO {
     func toDomain() -> ShowDetail {
         ShowDetail(
             id: id,
+            url: url.flatMap { URL(string: $0) },
             name: name,
             premiered: premiered,
             posterURL: image?.medium.flatMap { URL(string: $0) },
