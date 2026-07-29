@@ -131,6 +131,11 @@ private extension DetailScreenView {
                     .foregroundStyle(.secondary)
                     .italic()
             }
+
+            // Cast
+            if !viewModel.cast.isEmpty {
+                castSection
+            }
         }
         .padding(20)
     }
@@ -141,6 +146,81 @@ private extension DetailScreenView {
             systemImage: "wifi.exclamationmark",
             description: Text(message)
         )
+    }
+
+    // MARK: - Cast Section
+
+    var castSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Divider()
+
+            Text("Cast")
+                .font(.title3.bold())
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 16) {
+                    ForEach(viewModel.cast) { member in
+                        CastMemberCard(member: member)
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - CastMemberCard
+
+private struct CastMemberCard: View {
+
+    let member: CastMember
+
+    private enum Layout {
+        static let photoSize: CGFloat = 72
+        static let cardWidth: CGFloat = 88
+        static let cornerRadius: CGFloat = 36
+    }
+
+    var body: some View {
+        VStack(spacing: 8) {
+            AsyncImage(url: member.person.photoURL) { phase in
+                switch phase {
+                case .empty:
+                    Circle()
+                        .fill(Color(.systemGray5))
+                        .overlay { ProgressView().scaleEffect(0.6) }
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .clipShape(Circle())
+                case .failure:
+                    Circle()
+                        .fill(Color(.systemGray5))
+                        .overlay {
+                            Image(systemName: "person.fill")
+                                .foregroundStyle(.secondary)
+                        }
+                @unknown default:
+                    Circle().fill(Color(.systemGray5))
+                }
+            }
+            .frame(width: Layout.photoSize, height: Layout.photoSize)
+            .clipShape(Circle())
+
+            VStack(spacing: 2) {
+                Text(member.person.name)
+                    .font(.caption.bold())
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+
+                Text(member.character.name)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+            }
+        }
+        .frame(width: Layout.cardWidth)
     }
 }
 
