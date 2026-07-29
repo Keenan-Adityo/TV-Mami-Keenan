@@ -57,14 +57,34 @@ private extension ListScreenView {
                 description: Text("There are no shows to display right now.")
             )
         } else {
-            List(shows) { show in
-                NavigationLink(destination: DetailScreenView(showID: show.id)) {
-                    TVShowCard(show: show)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    ForEach(shows) { show in
+                        NavigationLink(destination: DetailScreenView(showID: show.id)) {
+                            TVShowCard(show: show)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                        }
+                        .buttonStyle(.plain)
+
+                        Divider()
+                            .padding(.leading, 16)
+                    }
+                    if !viewModel.hasReachedEnd {
+                        HStack {
+                            Spacer()
+                            if viewModel.isLoadingMore {
+                                ProgressView()
+                                    .padding(.vertical, 16)
+                            }
+                            Spacer()
+                        }
+                        .onAppear {
+                            Task { await viewModel.loadMoreShows() }
+                        }
+                    }
                 }
-                .buttonStyle(.plain)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
             }
-            .listStyle(.plain)
         }
     }
 
