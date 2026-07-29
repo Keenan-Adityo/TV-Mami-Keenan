@@ -44,6 +44,17 @@ final class TVMazeService: TVMazeServiceProtocol {
         return dtos.map { $0.toDomain() }
     }
 
+    /// Fetches the full detail of a single show by its TVMaze ID.
+    func fetchShowDetail(id: Int) async throws -> ShowDetail {
+        let url = try buildURL(path: "/shows/\(id)")
+
+        let (data, response) = try await performRequest(url: url)
+        try validateHTTPResponse(response)
+
+        let dto = try decode(ShowDetailDTO.self, from: data)
+        return dto.toDomain()
+    }
+
     // MARK: - Private Helpers
 
     private func buildURL(path: String, queryItems: [URLQueryItem] = []) throws -> URL {
