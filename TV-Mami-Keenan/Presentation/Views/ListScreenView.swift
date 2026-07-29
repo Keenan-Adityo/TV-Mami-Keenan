@@ -58,8 +58,11 @@ private extension ListScreenView {
             )
         } else {
             List(shows) { show in
-                TVShowCard(show: show)
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                NavigationLink(destination: DetailScreenView(showID: show.id)) {
+                    TVShowCard(show: show)
+                }
+                .buttonStyle(.plain)
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
             }
             .listStyle(.plain)
         }
