@@ -33,6 +33,7 @@ final class TVMazeService: TVMazeServiceProtocol {
     /// Fetches a paginated list of shows.
     /// The TVMaze API is zero-based: page 0 returns shows 1–250, page 1 returns 251–500, etc.
     func fetchShows(page: Int) async throws -> [Show] {
+        print("fetching")
         let url = try buildURL(path: "/shows", queryItems: [
             URLQueryItem(name: "page", value: String(page))
         ])

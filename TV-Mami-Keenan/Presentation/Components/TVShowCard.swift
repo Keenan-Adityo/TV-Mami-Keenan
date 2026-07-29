@@ -26,9 +26,11 @@ struct TVShowCard: View {
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
             posterImage
-            showInfo
-            Spacer()
-            ratingBadge
+            VStack(alignment: .leading,) {
+                showInfo
+                    .padding(.top, 4)
+                Spacer()
+            }
         }
     }
 }
@@ -36,7 +38,6 @@ struct TVShowCard: View {
 // MARK: - Subviews
 
 private extension TVShowCard {
-
     var posterImage: some View {
         AsyncImage(url: show.posterURL) { phase in
             switch phase {
@@ -69,19 +70,16 @@ private extension TVShowCard {
     }
 
     var showInfo: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 2) {
             Text(show.name)
                 .font(.headline)
                 .lineLimit(2)
+            Label(show.ratingDisplayString, systemImage: "star.fill")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.orange)
+                .labelStyle(.titleAndIcon)
+                .monospacedDigit()
         }
-    }
-
-    var ratingBadge: some View {
-        Label(show.ratingDisplayString, systemImage: "star.fill")
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.orange)
-            .labelStyle(.titleOnly)
-            .monospacedDigit()
     }
 }
 
