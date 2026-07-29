@@ -62,17 +62,6 @@ private extension DetailScreenView {
         .ignoresSafeArea(edges: .top)
         .navigationTitle(showDetail.name)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if let url = showDetail.url {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    ShareLink(
-                        item: url,
-                        subject: Text(showDetail.name),
-                        message: Text(showDetail.summary ?? "")
-                    )
-                }
-            }
-        }
     }
 
     func backdropImage(url: URL?) -> some View {
@@ -116,6 +105,18 @@ private extension DetailScreenView {
                 Label(premiered, systemImage: "calendar")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+            }
+
+            // Share button
+            if let url = showDetail.url {
+                ShareLink(
+                    item: url,
+                    subject: Text(showDetail.name),
+                    message: Text(showDetail.summary ?? "")
+                ) {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                        .font(.subheadline.weight(.medium))
+                }
             }
 
             Divider()
