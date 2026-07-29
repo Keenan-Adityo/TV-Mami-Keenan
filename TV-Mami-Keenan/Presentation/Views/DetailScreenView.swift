@@ -111,8 +111,9 @@ private extension DetailScreenView {
             if let url = showDetail.url {
                 ShareLink(
                     item: url,
-                    subject: Text(showDetail.name),
-                    message: Text(showDetail.summary ?? "")
+                    subject: Text("Check out this link"),
+                    message: Text("MamiKos! Check out this cool show"),
+                    preview: SharePreview(showDetail.name)
                 ) {
                     Label("Share", systemImage: "square.and.arrow.up")
                         .font(.subheadline.weight(.medium))
