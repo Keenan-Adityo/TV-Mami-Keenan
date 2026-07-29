@@ -13,6 +13,7 @@ struct DetailScreenView: View {
     // MARK: - Dependencies
 
     @State private var viewModel: DetailScreenViewModel
+    @State private var selectedSeasonID: Int?
 
     // MARK: - Initializer
 
@@ -131,11 +132,18 @@ private extension DetailScreenView {
                     .foregroundStyle(.secondary)
                     .italic()
             }
+            
+            // Seasons & Episodes
+            if !viewModel.seasons.isEmpty {
+                seasonsSection
+            }
 
             // Cast
             if !viewModel.cast.isEmpty {
                 castSection
             }
+
+            
         }
         .padding(20)
     }
@@ -146,6 +154,74 @@ private extension DetailScreenView {
             systemImage: "wifi.exclamationmark",
             description: Text(message)
         )
+    }
+
+ // MARK: - Seasons & Episodes Section
+
+    var seasonsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Divider()
+
+            Text("Seasons")
+                .font(.title3.bold())
+
+            // Season picker — horizontal pill switcher
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(viewModel.seasons) { season in
+                        let isSelected = selectedSeasonID == season.id
+                        Button(season.displayTitle) {
+                            selectedSeasonID = season.id
+                        }
+                        .font(.subheadline.weight(isSelected ? .semibold : .regular))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 7)
+                        .background(isSelected ? Color.accentColor : Color(.systemGray5))
+                        .foregroundStyle(isSelected ? .white : .primary)
+                        .clipShape(Capsule())
+                        .task(id: season.id) {
+                            await viewModel.loadEpisodes(forSeasonID: season.id)
+                        }
+                    }
+                }
+            }
+
+            // Episode list for the selected season
+            if let seasonID = selectedSeasonID {
+                episodeList(for: seasonID)
+            }
+        }
+        .onAppear {
+            // Auto-select the first season when the section appears
+            if selectedSeasonID == nil {
+                selectedSeasonID = viewModel.seasons.first?.id
+            }
+        }
+    }
+
+    @ViewBuilder
+    func episodeList(for seasonID: Int) -> some View {
+        let isLoading = viewModel.loadingSeasonIDs.contains(seasonID)
+        let episodes = viewModel.episodesBySeason[seasonID] ?? []
+
+        if isLoading && episodes.isEmpty {
+            ProgressView()
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+        } else if episodes.isEmpty {
+            Text("No episodes available.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .padding(.vertical, 8)
+        } else {
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 12) {
+                    ForEach(episodes) { episode in
+                        EpisodeCard(episode: episode)
+                    }
+                }
+            }
+        }
     }
 
     // MARK: - Cast Section
@@ -166,63 +242,10 @@ private extension DetailScreenView {
             }
         }
     }
+
+   
 }
 
-// MARK: - CastMemberCard
-
-private struct CastMemberCard: View {
-
-    let member: CastMember
-
-    private enum Layout {
-        static let photoSize: CGFloat = 72
-        static let cardWidth: CGFloat = 88
-        static let cornerRadius: CGFloat = 36
-    }
-
-    var body: some View {
-        VStack(spacing: 8) {
-            AsyncImage(url: member.person.photoURL) { phase in
-                switch phase {
-                case .empty:
-                    Circle()
-                        .fill(Color(.systemGray5))
-                        .overlay { ProgressView().scaleEffect(0.6) }
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-                        .clipShape(Circle())
-                case .failure:
-                    Circle()
-                        .fill(Color(.systemGray5))
-                        .overlay {
-                            Image(systemName: "person.fill")
-                                .foregroundStyle(.secondary)
-                        }
-                @unknown default:
-                    Circle().fill(Color(.systemGray5))
-                }
-            }
-            .frame(width: Layout.photoSize, height: Layout.photoSize)
-            .clipShape(Circle())
-
-            VStack(spacing: 2) {
-                Text(member.person.name)
-                    .font(.caption.bold())
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-
-                Text(member.character.name)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-            }
-        }
-        .frame(width: Layout.cardWidth)
-    }
-}
 
 // MARK: - Preview
 
