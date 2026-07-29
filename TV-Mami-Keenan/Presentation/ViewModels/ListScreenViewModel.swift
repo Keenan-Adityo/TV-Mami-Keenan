@@ -1,4 +1,4 @@
-// MARK: - ShowListViewModel.swift
+// MARK: - ListScreenViewModel.swift
 // TV-Mami-Keenan
 //
 // Purpose: ViewModel for the show list screen.
@@ -15,7 +15,7 @@ enum ViewState {
     case error(String)
 }
 
-// MARK: - ShowListViewModel
+// MARK: - ListScreenViewModel
 
 @Observable
 @MainActor
