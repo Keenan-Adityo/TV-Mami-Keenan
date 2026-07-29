@@ -77,6 +77,17 @@ final class TVMazeService: TVMazeServiceProtocol {
         return dtos.map { $0.toDomain() }
     }
 
+    /// Fetches the cast of a given show in billed order.
+    func fetchCast(showID: Int) async throws -> [CastMember] {
+        let url = try buildURL(path: "/shows/\(showID)/cast")
+
+        let (data, response) = try await performRequest(url: url)
+        try validateHTTPResponse(response)
+
+        let dtos = try decode([CastMemberDTO].self, from: data)
+        return dtos.map { $0.toDomain() }
+    }
+
     // MARK: - Private Helpers
 
     private func buildURL(path: String, queryItems: [URLQueryItem] = []) throws -> URL {
